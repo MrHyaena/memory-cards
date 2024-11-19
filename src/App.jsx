@@ -5,22 +5,50 @@ function App() {
   let highestScore = 0;
   const [score, setScore] = useState(0);
   const [cards, setCards] = useState([
-    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png",
-    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png",
-    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
-    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/5.png",
-    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png",
-    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png",
-    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/8.png",
-    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png",
-    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png",
+    {
+      url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+      id: 0,
+    },
+    {
+      url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png",
+      id: 1,
+    },
+    {
+      url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png",
+      id: 2,
+    },
+    {
+      url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
+      id: 3,
+    },
+    {
+      url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/5.png",
+      id: 4,
+    },
+    {
+      url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png",
+      id: 5,
+    },
+    {
+      url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png",
+      id: 6,
+    },
+    {
+      url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/8.png",
+      id: 7,
+    },
+    {
+      url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png",
+      id: 8,
+    },
+    {
+      url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png",
+      id: 9,
+    },
   ]);
   const [cardsCompare, setCompare] = useState([]);
-
-  function scoreUp() {
-    setScore(score + 1);
-  }
+  const [identifier, setIdentifier] = useState([1]);
+  const [highScore, setHighScore] = useState(0);
 
   function shuffleCards() {
     const shuffledArray = [];
@@ -31,8 +59,33 @@ function App() {
     setCards(shuffledArray);
   }
 
-  function onClickAll() {
-    scoreUp();
+  function turnResult(id) {
+    console.log(cardsCompare);
+    console.log(id);
+
+    const controlArray = cardsCompare.filter((item) => {
+      console.log(item);
+      return item === id;
+    });
+    console.log(controlArray);
+    const newArray = cardsCompare;
+
+    if (controlArray.length > 0) {
+      console.log("end result");
+      setHighScore(score);
+      setScore(0);
+      setCompare([]);
+      setIdentifier(0);
+    } else {
+      newArray.push(id);
+      setCompare(newArray);
+      setScore(score + 1);
+    }
+    console.log(cardsCompare);
+  }
+
+  function onClickAll(id) {
+    turnResult(id);
     shuffleCards();
   }
 
@@ -52,28 +105,35 @@ function App() {
       <CreateCards
         cards={cards}
         onClickAll={onClickAll}
-        cardsCompare={cardsCompare}
-        setCompare={setCompare}
+        identifier={identifier}
+        setIdent={setIdentifier}
+        score={score}
+        highScore={highScore}
       />
     </>
   );
 }
 
-function CreateCards({ cards, onClickAll }) {
-  const array = cards.map((item, index) => {
-    console.log(item);
+function CreateCards({ cards, onClickAll, identifier, setIdent, highScore }) {
+  if (identifier > 0) {
+    const array = cards.map((item, index) => {
+      return (
+        <div key={index} className="card" onClick={() => onClickAll(item.id)}>
+          <img src={item.url}></img>
+        </div>
+      );
+    });
 
+    return <div className="board">{array}</div>;
+  } else {
     return (
-      <div
-        key={index}
-        className="card"
-        onClick={onClickAll}
-        style={{ backgroundImage: "url(" + item + ")" }}
-      ></div>
+      <div className="newGame">
+        <h1>You lost! Do you want to play another game?</h1>
+        <h1>Your score was: {highScore}</h1>
+        <button onClick={() => setIdent(1)}>Play new game</button>
+      </div>
     );
-  });
-
-  return <div className="board">{array}</div>;
+  }
 }
 
 export default App;
